@@ -1,0 +1,122 @@
+=============================================================================
+
+                      CTI Utilites for Linux
+                      Copyright (C) 2010, CTI.
+
+=============================================================================
+Content
+
+1. Introduction
+2. System Requirement
+3. Installation
+4. set485 Utility
+5. setmodem Utility
+-----------------------------------------------------------------------------
+1. Introduction
+
+   In this directory you find the following utilities:
+
+        - set485
+        - setmodem
+        - arb_setbaud
+
+   All utilities are published in form of source code under GNU General Public
+   License in this version. Please refer to GNU General Public License
+   announcement in each source code file for more detail.
+
+-----------------------------------------------------------------------------
+2. System Requirement
+
+   - Hardware platform: x86
+   - Kernel version: 2.6.x (as supported by cti_serial_???) package
+   - gcc version 2.72 or later
+
+-----------------------------------------------------------------------------
+3. Installation
+
+   In order to use the utilities you will need to build them on your system.
+   To do this give the following commmand in the utilities directory:
+
+   # make
+
+   The utility files "set485", "setmodem", and "arb_setbaud"  will now be
+   built and are ready to use.
+
+-----------------------------------------------------------------------------
+4. set485 Utility
+
+    This utility will allows you to set various 485 line modes such as:
+       - 485 Full Duplex
+       - 485 Half Duplex
+       - 485 Multi Drop Slave
+
+    set485 allow you to configure the ports directly from the command line.
+    usage format below:
+
+    # ./set485 [-g <dev>] [-s <dev> <mode>] [-x <dev> <mode>] [-g ...] [-s ...]
+
+    -g <dev>            Get device <dev>'s mode
+    -s <dev> <mode>     Set device <dev> to 485 mode full, half or slave
+    -x <dev> <mode>     Set device <dev> Xtreme 485 mode 0 or 1 to
+                        disable or enable respectively. Should be done before
+                        setserial. This option is for Xtreme/104 only (NOT
+                        Plus or Express).
+
+    Modes can be abbreviated to the first letter
+    Multiple gets/sets are allowed in any order on the command line
+    set485 will exit after the first error
+
+    You can also use all of these same features in set485 in it's own
+    standalone application mode, by simply running:
+
+    # ./set485
+
+-----------------------------------------------------------------------------
+5. setmodem Utility
+
+    This utility will allows various modem signals on any CTI serial port.
+
+
+    setmodem [-g <dev>] [-s <dev> <signal> [signal ...]] [-g ...] [-s ...]
+
+    -g <dev>                Get device <dev>'s modem signals
+    -s <dev> <mode>         Set device <dev>'s modem signals: [-]RTS [-DTR]
+    -d <dev>                Toggle modem signal interrupt
+
+    Multiple gets/sets are allowed in any order on the command line
+    setmodem will exit after the first error
+
+    You can also use all of these same features in set485 in it's own
+    standalone application mode, by simply running:
+
+    # ./setmodem
+
+-----------------------------------------------------------------------------
+6. arb_setbaud Utility
+
+    This utility will allow you to request an arbitrary baud rate from the
+    device driver instead of being restricted to the termios table of BAUD
+    definitions. This does not mean that you will be able to hit every baud
+    rate that is asked for. Limiting factors are the UART and oscillator
+    used on a given board. This feature is best used with board which use
+    a fractional divisor capable UART, such as the XR17V25x, XR17V35x,
+    or XR16V79x series.
+
+    To use this tool, the port must already be opened by the intended
+    application, and then invoked as follows.
+
+    # ./arb_setbaud [-d dev] [-b baud]
+
+    -d dev          device to use [/dev/ttyCTI7]
+    -b baud         baud rate [9600]
+
+    Examples:
+    ./arb_setbaud -d /dev/ttyCTI0 -b 1000000
+    ./arb_setbaud -d /dev/ttyCTI1 -b 500000
+    ./arb_setbaud -d /dev/ttyCTI2 -b 10000
+
+    Due to the effect of the setting the baud by this utility, any data
+    transfer ocurring at the time will be corrupted or lost. If you are using
+    this feature in your own custom appliction, it may be desirable to use
+    the ioctl() call directly to avoid disruption of the datastream.
+

@@ -1,0 +1,3 @@
+insmod cti_serial_core.ko nr_uarts=16
+sleep 1
+insmod cti_8250_pci.ko

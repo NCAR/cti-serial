@@ -1,0 +1,3 @@
+rmmod cti_8250_pci.ko
+sleep 1
+rmmod cti_serial_core.ko
