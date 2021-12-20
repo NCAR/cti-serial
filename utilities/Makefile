@@ -1,3 +1,6 @@
+DESTDIR = ?= 
+PREFIX ?= /usr
+
 OS := $(shell uname -s)
 
 ifeq (Linux,${OS})
@@ -29,6 +32,10 @@ SCRIPTS := find_osc setparms titan-readuart titan-setbaud
 	${CC} ${CFLAGS} -o $@ $< ${LIBFLAGS}
 
 all: ${PROGS}
+
+install: ${PROGS}
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install ${PROGS} $(DESTDIR)$(PREFIX)/bin
 
 clean:
 	@rm -rf ${OBJS} ${PROGS}

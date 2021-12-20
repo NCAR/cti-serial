@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
   char data[COMMAND_SIZE];
   int i;
   char *dummy;
-  int dev = (int) NULL;
+  int dev = 0;
   unsigned int result;
   char prompt[COMMAND_SIZE] = "> ";
   int quit_loop;
@@ -258,7 +258,7 @@ no_signals:
           ((i > 0) && (command[i] == ' ') && (command[i - 1] == ' ')))
         i--;
     }
-    command[i] = (char) NULL;
+    command[i] = '\0';
     strcpy(data, command);
     if ((data[0] >= 'A') && (data[0] <= 'Z'))
       data[0] += ' ';
