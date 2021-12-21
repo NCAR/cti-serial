@@ -1,0 +1,13 @@
+Source: cti-serial
+Section: kernel
+Priority: optional
+Maintainer: Gordon <maclean@ucar.edu>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+Homepage: https://connecttech.com
+
+Package: cti-serial
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Driver and utilities for Connect Tech Xtreme 104
+ Driver and utilities for Connect Tech Xtreme 104
