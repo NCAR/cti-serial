@@ -1,0 +1,79 @@
+#!/bin/sh
+set -e
+
+# set -x
+
+case "$1" in
+    configure)
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+if [ "$1" = "configure" ]; then
+
+    # Add CTI entries to /etc/serial.conf,
+    # trying not to modify non-CTI entries.
+
+    # If serial.conf doesn't exist and autoserial.conf does, 
+    # copy autoserial.conf to serial.conf, skipping AUTOSAVE comments.
+    cf=/etc/serial.conf
+    autocf=/var/lib/setserial/autoserial.conf
+
+    if ! [ -f $cf -a -f $autocf ]; then
+        echo "Copying $autocf to $cf, for use by setserial service"
+        echo "###Copied from $autocf### on $(date)" > $cf
+        grep -v "^#" $autocf >> $cf
+    fi
+
+    cfnocti=$(mktemp)
+    ctiold=$(mktemp)
+    ctinew=$(mktemp)
+
+    trap '{ rm -f $cfnocti $ctiold $ctinew; }' EXIT
+
+    sed -e '/\/dev\/ttyS[4-9]/d' -e '/\/dev\/ttyS1[0-1]/d' \
+        -e '/\/dev\/ttyCTI*/d' $cf > $cfnocti
+
+    # use || : syntax so that an error does not cause script to exit
+    fgrep /dev/ttyCTI $cf > $ctiold || :
+
+    cat << EOD > $ctinew
+### /dev/ttyCTI ports added by cti-serial package###
+/dev/ttyCTI0 port 0x300 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI1 port 0x308 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI2 port 0x310 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI3 port 0x318 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI4 port 0x150 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI5 port 0x158 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI6 port 0x160 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI7 port 0x168 baud_base 115200 irq 11 ^skip_test autoconfig
+EOD
+
+    if ! diff -q $ctinew $ctiold > /dev/null; then
+        if [ -s $ctiold ]; then
+            echo "Warning CTI serial configuration has changed. Old configuration saved to /etc/cti_serial.conf"
+            cp $ctiold /etc/cti_serial.conf
+        fi
+        cat $cfnocti $ctinew > $cf
+        # start setserial service
+    fi
+
+    if ! systemctl is-enabled cti-serial.service > /dev/null; then
+        systemctl enable cti-serial.service
+        systemctl start cti-serial.service
+    else
+        systemctl restart cti-serial.service
+    fi
+
+fi
+
+#DEBHELPER#
+
+exit 0

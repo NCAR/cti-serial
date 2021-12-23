@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+if [ "$1" = "purge" -o "$1" = "remove" ]; then
+
+    # Add CTI entries to /etc/serial.conf,
+    # trying not to modify non-CTI entries.
+    cf=/etc/serial.conf
+    cfnocti=$(mktemp)
+    trap '{ rm -f $cfnocti; }' EXIT
+
+    sed -e '/\/dev\/ttyS[4-9]/d' -e '/\/dev\/ttyS1[0-1]/d' \
+        -e '/\/dev\/ttyCTI*/d' $cf > $cfnocti
+
+    if ! diff -q $cf $cfnocti; then
+        if [ -s $ctiold ]; then
+            echo "Removing CTI entries from $cf"
+            cp $cfnocti $cf
+        fi
+    fi
+fi
+
+#DEBHELPER#
+
+exit 0

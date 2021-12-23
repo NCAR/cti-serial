@@ -1,0 +1,17 @@
+[Unit]
+Description=Support for Connecttech.com Xtreme PC104 serial cards
+# It needs to be
+After=network.target
+
+[Service]
+Type=simple
+# Type=oneshot
+ExecStart=/lib/systemd/cti-serial-service.sh
+# RemainAfterExit=true
+StandardOutput=syslog
+StandardError=syslog
+# Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
