@@ -5,15 +5,16 @@ The cti_serial_core driver is identical to version 143 from Connect Tech.
 
 The driver creates device files, called **/dev/ttyCTI\***.
 
-This repository contains a debian directory for creating a native debian package. The package contains the following configuration files:
+This repository contains a debian directory for creating a native debian package, and a **build_dpkg.sh** script to build it, typically in a container.
 
+The package contains the following configuration files:
 
 ## Contents of cti-serial package
 
 ### Kernel modules
 - cti_serial_core.ko
 
-### Executable binaries
+### Executable binaries on /usr/bin
 - arb_setbaud
 - setmodem
 - set485
@@ -51,3 +52,14 @@ This repository contains a debian directory for creating a native debian package
 
 /lib/systemd/cti-serial-service.sh creates **/dev/ttyS[4-11]** backward compatible serial device files.
         
+## Building cti-serial package
+
+### Building in a Debian container
+The nidas-devel package contains a **start_podman** script in **/opt/nidas/bin** which can be used to start docker/podman images for building software.
+
+    # clone this repository
+    git clone https://github.com/NCAR/cti-serial.git
+    # run a podman image, mounting the current directory
+    cd cti-serial
+    # build the package, install to codename-bionic repository.
+    start_podman bionic /root/current/build_dpkg.sh i386 -I bionic

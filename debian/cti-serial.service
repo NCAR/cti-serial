@@ -1,16 +1,17 @@
 [Unit]
-Description=Support for Connecttech.com Xtreme PC104 serial cards
-# It needs to be
+Description=Create backward compatible /dev/ttyS* device files for Connecttech.com Xtreme PC104 serial cards
 After=network.target
 
 [Service]
-Type=simple
-# Type=oneshot
+Type=oneshot
 ExecStart=/lib/systemd/cti-serial-service.sh
-# RemainAfterExit=true
+
+# Set RemainAfterExit=yes so that is will be considered active even
+# after the .sh script exits, this will avoid misleading "dead"
+# messages from systemctl status.
+RemainAfterExit=yes
 StandardOutput=syslog
 StandardError=syslog
-# Restart=always
 
 [Install]
 WantedBy=multi-user.target
