@@ -77,7 +77,7 @@ The nidas-devel package contains a **start_podman** script in **/opt/nidas/bin**
         cd cti-serial
 
 1. Run a podman image interactively.  An interactive session may be necessary if you're installing
-the package and the gpg-agent needs to prompt for the password to the "<eol-prog@ucar.edu>" signing key.
+the package and the gpg-agent needs to prompt for the password to the \<eol-prog@ucar.edu\> signing key.
 
         start_podman bionic
 

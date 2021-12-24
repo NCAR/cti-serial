@@ -48,6 +48,8 @@ ifeq ($(KERNEL_DIR),)
 KERNEL_DIR := /lib/modules/$(shell uname -r)/build
 endif
 
+$(info KERNEL_DIR=$(KERNEL_DIR))
+
 default:
 	$(MAKE) -C $(KERNEL_DIR) M=$$PWD
 

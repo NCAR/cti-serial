@@ -6,6 +6,7 @@ KERNEL_DIR ?= $(shell find /usr/src -maxdepth 1 -mindepth 1 -type d -print | hea
 # KERNEL_DIR := /usr/src/linux-headers-4.15.18-vortex86dx3 
 
 $(info DESTDIR=$(DESTDIR))
+$(info KERNEL_DIR=$(KERNEL_DIR))
 $(info DEB_BUILD_GNU_TYPE=$(DEB_BUILD_GNU_TYPE))
 $(info DEB_HOST_GNU_TYPE=$(DEB_HOST_GNU_TYPE))
 $(info DEB_HOST_MULTIARCH=$(DEB_HOST_MULTIARCH))

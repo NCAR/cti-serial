@@ -72,6 +72,38 @@ EOD
         systemctl restart cti-serial.service
     fi
 
+    # clean out hand edits
+    cf=/etc/modprobe.d/nidas.conf
+    sed -i -r -e '/options cti_serial/d' $cf
+
+    cf=/etc/modules-load.d/ads.conf
+    sed -i -r -e '/cti_serial_core/d' $cf
+
+    # comment cti lines in /etc/rc.local
+    cf=/etc/rc.local
+    sed -i -r -e 's,^(sh /etc/load_cti.sh),# \1,' -e 's,^(sh /etc/rc.serial),# \1,' $cf
+
+    # Risky: edit /etc/default/grub to add 8250.nr_uarts=4 so that the default serial
+    # module does not create /dev/ttyS device files above $uartval
+    cf=/etc/default/grub
+
+    uartopt="8250.nr_uarts"
+    uartval="4"
+
+    if grep -q '^GRUB_CMDLINE_LINUX_DEFAULT="' $cf; then
+        if ! grep -q '^GRUB_CMDLINE_LINUX_DEFAULT=".*'$uartopt $cf; then
+            sed -r -e 's/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 '$uartopt=$uartval'"/' $cf > $ctiold
+            # check syntax
+            if sh -n $ctiold > /dev/null; then
+                cp $ctiold $cf
+                # do a test grub-mkconfig, if it succeeds, then update-grub
+                if grub-mkconfig -o $ctiold > /dev/null 2>&1; then
+                    update-grub
+                fi
+            fi
+        fi
+    fi
+
 fi
 
 #DEBHELPER#
