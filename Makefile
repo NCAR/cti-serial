@@ -2,7 +2,8 @@
 # ALL:    build
 PREFIX = /usr
 
-KERNEL_DIR := /usr/src/linux-headers-4.15.18-vortex86dx3 
+KERNEL_DIR ?= $(shell find /usr/src -maxdepth 1 -mindepth 1 -type d -print | head -n 1)
+# KERNEL_DIR := /usr/src/linux-headers-4.15.18-vortex86dx3 
 
 $(info DESTDIR=$(DESTDIR))
 $(info DEB_BUILD_GNU_TYPE=$(DEB_BUILD_GNU_TYPE))

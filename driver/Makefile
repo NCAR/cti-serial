@@ -37,8 +37,16 @@ else
 
 $(info ifneq KERNELRELEASE is empty)
 
-KERNEL_DIR := /usr/src/linux-headers-4.15.18-vortex86dx3 
-KERNEL_DIR ?= /lib/modules/$(shell uname -r)/build
+# if KERNEL_DIR is empty, look on /usr/src
+ifeq ($(KERNEL_DIR),)
+KERNEL_DIR := $(shell find /usr/src -maxdepth 1 -mindepth 1 -type d -print | head -n 1)
+endif
+
+# if KERNEL_DIR is still empty, get current kernel version - assumes we're building
+# for this host system.
+ifeq ($(KERNEL_DIR),)
+KERNEL_DIR := /lib/modules/$(shell uname -r)/build
+endif
 
 default:
 	$(MAKE) -C $(KERNEL_DIR) M=$$PWD
