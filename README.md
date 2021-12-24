@@ -54,8 +54,25 @@ The package contains the following configuration files:
         
 ## Building cti-serial package
 
+### KERNEL_DIR
+To build the cti_serial_core module, make needs to be able to find the Linux kernel headers matching the kernel version of the target system.
+
+The headers are typically found in **/usr/src**, in a directory such as **linux-headers-4.15.18-vortex86dx3**.
+
+On Debian you need to install a **linux-headers** package corresponding to the kernel of the target system.  
+
+For example, the header package for a Vortex DX3 running Ubuntu bionic, kernel 4.15.18:
+
+    apt-get install linux-headers-4.15.18-vortex86dx3
+
+The Makefile will use the first directory that is found on /usr/src.  If there are more than one you should move/uninstsall the extra ones, or hand edit the Makefile and set the value of KERNEL_DIR. This can also be done if the headers are in some other directory than **/usr/src**.
+
+    KERNEL_DIR := /usr/src/linux-headers-4.15.18-vortex86dx3 
+
 ### Building in a Debian container
 The nidas-devel package contains a **start_podman** script in **/opt/nidas/bin** which can be used to start docker/podman images for building software.
+
+Once the KERNEL_DIR make variable is set correctly, then:
 
     # clone this repository
     git clone https://github.com/NCAR/cti-serial.git
