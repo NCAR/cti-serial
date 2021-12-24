@@ -7,8 +7,6 @@ The driver creates device files, called **/dev/ttyCTI\***.  Also see below about
 
 This repository contains a debian directory for creating a native debian package, and a **build_dpkg.sh** script to build it, typically in a container.
 
-The package contains the following configuration files:
-
 ## Contents of cti-serial package
 
 ### Kernel modules
