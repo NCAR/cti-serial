@@ -72,11 +72,24 @@ The Makefile will use the first directory that is found on /usr/src.  If there a
 ### Building in a Debian container
 The nidas-devel package contains a **start_podman** script in **/opt/nidas/bin** which can be used to start docker/podman images for building software.
 
-Once the KERNEL_DIR make variable is set correctly, then:
-
     # clone this repository
     git clone https://github.com/NCAR/cti-serial.git
-    # run a podman image, mounting the current directory
+
+    # run a podman image interactively. An interactive session may be necessary
+    # if you're installing the package and you need to be prompted for the gpg-key password.
     cd cti-serial
-    # build the package, install to codename-bionic repository.
+    start_podman bionic
+
+    # within the container, if necessary, install the linux-headers package or set
+    # KERNEL_DIR in the Makefile
+    apt-get update 
+    apt-get install linux-headers-4.15.18-vortex86dx3
+
+    cd /root/current
+    # build the package, which will be placed in /root
+    ./build_dpkg.sh i386
+    # build and install the package with reprepo to the EOL debian repository on /net/ftp
+    ./build_dpkg.sh i386 -I bionic
+
+    # To build the package non-interacively
     start_podman bionic /root/current/build_dpkg.sh i386 -I bionic
