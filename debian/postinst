@@ -29,7 +29,7 @@ if [ "$1" = "configure" ]; then
     cf=/etc/serial.conf
     autocf=/var/lib/setserial/autoserial.conf
 
-    if ! [ -f $cf -a -f $autocf ]; then
+    if  [ ! -f $cf -a -f $autocf ]; then
         echo "Copying $autocf to $cf, for use by setserial service"
         echo "###Copied from $autocf### on $(date)" > $cf
         grep -v "^#" $autocf >> $cf
