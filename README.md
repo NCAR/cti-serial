@@ -29,22 +29,21 @@ The package contains the following configuration files:
     2. Adds setserial entries for **/dev/ttyCTI\*** files to /etc/serial.conf.
 
 #### setserial services in Ubuntu
+There are two setserial services in Ubuntu bionic (and maybe other distributions):
 
-    There are two setserial services in Ubuntu bionic (and maybe other distributions):
+- setserial.service
 
-    1. setserial.service, runs /etc/init.d/setserial.
+The setserial.service invokes /etc/init.d/setserial.  If /etc/serial.conf exists, then this
+script does nothing, otherwise it runs setserial on the entries in /var/lib/setserial/autoserial.conf.
 
-       If /etc/serial.conf exists, then this script does nothing, otherwise it
-       runs setserial on the entries in /var/lib/setserial/autoserial.conf.
+- etc-setserial.service
 
-    2. etc-setserial.service, runs /etc/init.d/etc-setserial.
-       
-       Runs setserial on the entires in /etc/serial.conf.
+The etc-setserial.service invokes /etc/init.d/etc-setserial, which runs setserial on the entires in /etc/serial.conf.
 
-    So after cti-serial is installed, /etc/serial.conf should exist
-    and contain entries for the on-board serial ports
-    (/dev/ttyS[0-3] on Vertex) and for the CTI ports (/dev/ttyCTI[0-7]).
-    These entries will be read by the etc-setserial.service, /etc/init.d/etc-setserial.
+So after cti-serial is installed, /etc/serial.conf should exist
+and contain entries for the on-board serial ports
+(/dev/ttyS[0-3] on Vertex) and for the CTI ports (/dev/ttyCTI[0-7]).
+These entries will then be read by /etc/init.d/etc-setserial.
 
 ### cti-serial.service
 - /lib/systemd/system/cti-serial.service
@@ -77,25 +76,31 @@ The nidas-devel package contains a **start_podman** script in **/opt/nidas/bin**
         git clone https://github.com/NCAR/cti-serial.git
         cd cti-serial
 
-2. Run a podman image interactively.  An interactive session may be necessary if you're installing
-the package and the gpg-agent needs to prompt for the <eol-prog@ucar.edu> signing key passord.
+1. Run a podman image interactively.  An interactive session may be necessary if you're installing
+the package and the gpg-agent needs to prompt for the password to the "<eol-prog@ucar.edu>" signing key.
 
         start_podman bionic
 
-    a. Within the container, if necessary, install the linux-headers package or set KERNEL_DIR in the Makefile:
+    a. The Ubuntu bionic image on docker.io/ncar contains the linux-headers-4.15.18-vortex86dx3 package.
+
+        If you need to install a different header package for the target system:
 
             apt-get update 
-            apt-get install linux-headers-4.15.18-vortex86dx3
+            apt-get install linux-headers-x.y.z
 
-    b. Build the package, which will be placed in /root
+    a. Edit the Makefile if you need to override the default search for KERNEL_DIR on **/usr/src**:
+
+            vi /root/current/Makefile
+
+    a. Build the package, which will be placed in the parent directory (/root in this example):
 
             cd /root/current
             ./build_dpkg.sh i386
 
-    c. Or, build and install the package with reprepo to the EOL debian repository on /net/ftp
+    a. Add the -I option to install the package with reprepo to the EOL debian repository on /net/ftp
 
             ./build_dpkg.sh i386 -I bionic
 
-3. To build the package non-interacively
+1. To build the package non-interacively
 
         start_podman bionic /root/current/build_dpkg.sh i386 -I bionic
