@@ -87,20 +87,22 @@ EOD
     sed -i -r -e 's,^(sh /etc/load_cti.sh),# \1,' -e 's,^(sh /etc/rc.serial),# \1,' $cf
 
     if $vortex; then
-        # Risky: edit /etc/default/grub to add 8250.nr_uarts=4 so that the default serial
-        # module does not create /dev/ttyS device files above $uartval
+        # A bit risky: edit /etc/default/grub to add 8250.nr_uarts=4 so that the default serial
+        # module does not create /dev/ttyS device files for ports $uartval and above
         cf=/etc/default/grub
 
         uartopt="8250.nr_uarts"
         uartval="4"
 
+        # options in GRUB_CMDLINE_LINUX are used for normal and recovery boot
+        # GRUB_CMDLINE_LINUX_DEFAULT applies only to normal boot
         if grep -q '^GRUB_CMDLINE_LINUX_DEFAULT="' $cf; then
             if ! grep -q '^GRUB_CMDLINE_LINUX_DEFAULT=".*'$uartopt $cf; then
-                sed -r -e 's/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 '$uartopt=$uartval'"/' $cf > $ctiold
-                # check syntax
-                if sh -n $ctiold > /dev/null; then
-                    cp $ctiold $cf
-                    # do a test grub-mkconfig, if it succeeds, then update-grub
+                sed -r -e 's/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 '$uartopt=$uartval'"/' $cf > $cf.new
+                # check syntax. /etc/default/grub is a shell script to set variables
+                if sh -n $cf.new > /dev/null; then
+                    mv $cf.new $cf
+                    # do a test grub-mkconfig, writing to temp file. If it succeeds, then update-grub
                     if grub-mkconfig -o $ctiold > /dev/null 2>&1; then
                         update-grub
                     fi
