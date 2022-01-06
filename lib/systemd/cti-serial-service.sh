@@ -12,7 +12,13 @@
 #       /dev/ttyCTI7    /dev/ttyS11
 
 first_port=4
-num_ports=8
+
+num_ports=16 # default for driver
+# Look in options for cti_serial_core for number of ports
+cf=/etc/modprobe.d/cti-serial.conf
+if grep -E -q '^options +cti_serial_core .*nr_uarts' $cf; then
+    num_ports=$(sed -r -n 's/^options +cti_serial_core .*nr_uarts=([0-9]+)/\1/p' $cf)
+fi
 
 # determine major number from driver entry in /proc/devices
 drvname=cti_serial_core

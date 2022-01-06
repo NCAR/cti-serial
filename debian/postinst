@@ -57,6 +57,10 @@ if [ "$1" = "configure" ]; then
 /dev/ttyCTI5 port 0x158 baud_base 115200 irq 11 ^skip_test autoconfig
 /dev/ttyCTI6 port 0x160 baud_base 115200 irq 11 ^skip_test autoconfig
 /dev/ttyCTI7 port 0x168 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI8  port 0x250 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI9  port 0x258 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI10 port 0x260 baud_base 115200 irq 11 ^skip_test autoconfig
+/dev/ttyCTI11 port 0x268 baud_base 115200 irq 11 ^skip_test autoconfig
 EOD
 
     if ! diff -q $ctinew $ctiold > /dev/null; then

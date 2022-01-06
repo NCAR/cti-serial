@@ -3,7 +3,7 @@ Driver, utilities and configuration for Connect Tech Xtreme 104 serial cards.
 
 The **cti_serial_core** driver module is identical to version 143 from Connect Tech.
 
-The driver creates device files, called **/dev/ttyCTI\***.  Also see below about the **cti-serial.service** which creates device files with the old naming convention: **/dev/ttyS[4-11]**.
+The driver creates device files, called **/dev/ttyCTI\***.  Also see below about the **cti-serial.service** which creates device files with the old naming convention: **/dev/ttyS\***.
 
 This repository contains a debian directory for creating a native debian package, and a **build_dpkg.sh** script to build it, typically in a container.
 
@@ -20,6 +20,7 @@ This repository contains a debian directory for creating a native debian package
 ### Configuration files
 - /etc/modules-load.d/cti-serial.conf: enables loading the **cti_serial_core** module at boot
 - /etc/modprobe.d/cti-serial.conf: options for cti_serial_core
+  - nr_uarts: the number of ports on the CTI card. 12 for the Xtreme/104 Isolated card.
 - /etc/serial.conf: created or modified by the postinst script of cti-serial
 
     The postinst script for this package does the following:
@@ -40,14 +41,14 @@ The etc-setserial.service invokes /etc/init.d/etc-setserial, which runs setseria
 
 So after cti-serial is installed, /etc/serial.conf should exist
 and contain entries for the on-board serial ports
-(/dev/ttyS[0-3] on Vertex) and for the CTI ports (/dev/ttyCTI[0-7]).
+(/dev/ttyS[0-3] on Vertex) and for the CTI ports (/dev/ttyCTI[0-11]) (assuming 12 ports).
 These entries will then be read by /etc/init.d/etc-setserial.
 
 ### cti-serial.service
 - /lib/systemd/system/cti-serial.service
 - /lib/systemd/cti-serial-service.sh, script run by cti-serial.service
 
-/lib/systemd/cti-serial-service.sh creates **/dev/ttyS[4-11]** which can be used instead of **/dev/ttyCTI[0-7]**.
+/lib/systemd/cti-serial-service.sh creates **/dev/ttyS[4-15]** which can be used instead of **/dev/ttyCTI[0-11]**.
         
 ## Building cti-serial package
 
