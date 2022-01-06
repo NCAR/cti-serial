@@ -24,6 +24,13 @@ if [ "$1" = "configure" ]; then
     # Add CTI entries to /etc/serial.conf,
     # trying not to modify non-CTI entries.
 
+    # Look in options for cti_serial_core for number of ports
+    num_ports=16 # default for driver
+    cf=/etc/modprobe.d/cti-serial.conf
+    if grep -E -q '^options +cti_serial_core .*nr_uarts' $cf; then
+        num_ports=$(sed -r -n 's/^options +cti_serial_core .*nr_uarts=([0-9]+)/\1/p' $cf)
+    fi
+
     # If serial.conf doesn't exist and autoserial.conf does, 
     # copy autoserial.conf to serial.conf, skipping AUTOSAVE comments.
     cf=/etc/serial.conf
@@ -47,7 +54,7 @@ if [ "$1" = "configure" ]; then
     # use || : syntax so that an error does not cause script to exit
     fgrep /dev/ttyCTI $cf > $ctiold || :
 
-    cat << EOD > $ctinew
+    cat << EOD | head -n $num_ports > $ctinew
 ### /dev/ttyCTI ports added by cti-serial package###
 /dev/ttyCTI0 port 0x300 baud_base 115200 irq 11 ^skip_test autoconfig
 /dev/ttyCTI1 port 0x308 baud_base 115200 irq 11 ^skip_test autoconfig
@@ -65,8 +72,8 @@ EOD
 
     if ! diff -q $ctinew $ctiold > /dev/null; then
         if [ -s $ctiold ]; then
-            echo "Warning CTI serial configuration has changed. Old configuration saved to /etc/cti_serial.conf"
-            cp $ctiold /etc/cti_serial.conf
+            echo "Warning CTI serial configuration has changed in $cf. Old configuration saved to /etc/cti_serial.conf.old"
+            cp $ctiold /etc/cti_serial.conf.old
         fi
         cat $cfnocti $ctinew > $cf
         # start setserial service
