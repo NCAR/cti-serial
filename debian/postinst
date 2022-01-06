@@ -54,7 +54,7 @@ if [ "$1" = "configure" ]; then
     # use || : syntax so that an error does not cause script to exit
     fgrep /dev/ttyCTI $cf > $ctiold || :
 
-    cat << EOD | head -n $num_ports > $ctinew
+    cat << EOD | head -n $(( $num_ports + 1 )) > $ctinew
 ### /dev/ttyCTI ports added by cti-serial package###
 /dev/ttyCTI0 port 0x300 baud_base 115200 irq 11 ^skip_test autoconfig
 /dev/ttyCTI1 port 0x308 baud_base 115200 irq 11 ^skip_test autoconfig
