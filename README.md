@@ -7,6 +7,12 @@ The driver creates device files, called **/dev/ttyCTI\***.  Also see below about
 
 This repository contains a debian directory for creating a native debian package, and a **build_dpkg.sh** script to build it, typically in a container.
 
+## Supported Serial Cards
+
+The cti-serial package has been tested for the [Connect Tech Xtreme 104 Isolated](https://connecttech.com/product/xtreme104-isolated/) serial card.
+
+This is a PC/104 card, not PCI.  With slight modifications it should work for other Connect Tech cards, but modifications (simplifications) for PCI will be more significant.
+
 ## Contents of cti-serial package
 
 ### Kernel modules
@@ -41,7 +47,7 @@ The etc-setserial.service invokes /etc/init.d/etc-setserial, which runs setseria
 
 So after cti-serial is installed, /etc/serial.conf should exist
 and contain entries for the on-board serial ports
-(/dev/ttyS[0-3] on Vertex) and for the CTI ports (/dev/ttyCTI[0-11]) (assuming 12 ports).
+(/dev/ttyS[0-3] on Vortex) and for the CTI ports (/dev/ttyCTI[0-11]) (assuming 12 ports).
 These entries will then be read by /etc/init.d/etc-setserial.
 
 ### cti-serial.service
@@ -50,6 +56,18 @@ These entries will then be read by /etc/init.d/etc-setserial.
 
 /lib/systemd/cti-serial-service.sh creates **/dev/ttyS[4-15]** which can be used instead of **/dev/ttyCTI[0-11]**.
         
+### Number of UARTs
+
+The Connect Tech Xtreme 104 Isolated card has 12 UARTs. So in **/etc/modprobe.d/cti-serial.conf** nr_uarts is set to 12.  In cti-serial/driver/8205_core.c, nr_uarts defaults to 16. It doesn't hurt to leave it at 16, except that unnecessary files /dev/ttyCTI12- ttyCTI15 are created, which might mislead some users to think they are functional.
+
+The number of UARTs on the motherboard is a kernel configuration parameter:
+
+    grep "CONFIG_SERIAL_8250_.*UARTS" /boot/config-4.15.18-vortex86dx3 
+
+On the Vortex, with 4 UARTs on the motherboard, but CONFIG_SERIAL_8250_RUNTIME_UARTS=32, then 32 /dev/ttyS\* ports are created when the 8250 serial driver is loaded, even though devices 4-31 are not functional.
+
+To avoid conflict between the /dev/ttyS device files created by the 8250 serial driver, and the files created for backward compatiblity by cti-serial.service, the cti-serial package alters the GRUB boot line, **GRUB_CMDLINE_LINUX_DEFAULT** in **/etc/default/grub** to set **8250.nr_uarts=4**. Then the 8250 driver will only create device files **/dev/ttyS0-ttyS3** when it is loaded.
+
 ## Building cti-serial package
 
 ### KERNEL_DIR
