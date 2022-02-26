@@ -88,7 +88,7 @@ The Makefile will set KERNEL_DIR to the first directory that is found on /usr/sr
     KERNEL_DIR := /my/location/linux-headers-4.15.18-vortex86dx3 
 
 ### Building in a Debian container
-The nidas-devel package contains a **start_podman** script in **/opt/nidas/bin** which can be used to start docker/podman images for building software.
+The nidas-devel package contains a **start_podman** script in **/opt/nidas/bin** which can be used to run docker/podman images for building software.
 
 1. Clone the cti-serial repository:
 
@@ -98,25 +98,25 @@ The nidas-devel package contains a **start_podman** script in **/opt/nidas/bin**
 1. Run a podman image interactively.  An interactive session may be necessary if you're installing
 the package and the gpg-agent needs to prompt for the password to the \<eol-prog@ucar.edu\> signing key.
 
-        start_podman bionic
+    start_podman bionic
 
-    a. The Ubuntu bionic image on docker.io/ncar contains the linux-headers-4.15.18-vortex86dx3 package.
+    1. The Ubuntu bionic image on docker.io/ncar contains the linux-headers-4.15.18-vortex86dx3 package.
 
-        If you need to install a different header package for the target system:
+       If you need to install a different header package for the target system:
 
             apt-get update 
             apt-get install linux-headers-x.y.z
 
-    a. Edit the Makefile if you need to override the default search for KERNEL_DIR on **/usr/src**:
+    1. Edit the Makefile if you need to override the default search for KERNEL_DIR on **/usr/src**:
 
             vi /root/current/Makefile
 
-    a. Build the package, which will be placed in the parent directory (/root in this example):
+    1. Build the package, which will be placed in the parent directory (/root in this example):
 
             cd /root/current
             ./build_dpkg.sh i386
 
-    a. Add the -I option to install the package with reprepo to the EOL debian repository on /net/ftp
+    1. Add the -I option to install the package with reprepo to the EOL debian repository on /net/ftp
 
             ./build_dpkg.sh i386 -I bionic
 

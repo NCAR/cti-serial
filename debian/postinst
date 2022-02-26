@@ -21,6 +21,20 @@ if [ "$1" = "configure" ]; then
     vortex=false
     grep -F "model name" /proc/cpuinfo | grep -F -q Vortex && vortex=true
 
+    # clean out hand edits
+    cf=/etc/modprobe.d/nidas.conf
+    sed -i -r -e '/options cti_serial/d' $cf
+
+    cf=/etc/modules-load.d/ads.conf
+    sed -i -r -e '/cti_serial_core/d' $cf
+
+    # comment cti lines in /etc/rc.local
+    cf=/etc/rc.local
+    sed -i -r -e 's,^(sh /etc/load_cti.sh),# \1,' -e 's,^(sh /etc/rc.serial),# \1,' $cf
+
+    # start driver module before cti-serial.service
+    lsmod | fgrep -q cti_serial_core || modprobe cti_serial_core
+
     # Add CTI entries to /etc/serial.conf,
     # trying not to modify non-CTI entries.
 
@@ -86,17 +100,6 @@ EOD
         systemctl restart cti-serial.service
     fi
 
-    # clean out hand edits
-    cf=/etc/modprobe.d/nidas.conf
-    sed -i -r -e '/options cti_serial/d' $cf
-
-    cf=/etc/modules-load.d/ads.conf
-    sed -i -r -e '/cti_serial_core/d' $cf
-
-    # comment cti lines in /etc/rc.local
-    cf=/etc/rc.local
-    sed -i -r -e 's,^(sh /etc/load_cti.sh),# \1,' -e 's,^(sh /etc/rc.serial),# \1,' $cf
-
     if $vortex; then
         # A bit risky: edit /etc/default/grub to add 8250.nr_uarts=4 so that the default serial
         # module does not create /dev/ttyS device files for ports $uartval and above
@@ -121,7 +124,6 @@ EOD
             fi
         fi
     fi
-
 fi
 
 #DEBHELPER#
