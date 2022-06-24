@@ -21,6 +21,8 @@ if [ $# -lt 1 ]; then
     usage $0
 fi
 
+pkg=cti-serial
+
 arch=amd64
 
 args="--no-tgz-check -sa"
@@ -98,14 +100,14 @@ sdir=$(realpath $(dirname $0))
 cd $sdir
 
 # create changelog
-$sdir/deb_changelog.sh cti-serial > debian/changelog
+$sdir/deb_changelog.sh ${pkg} > debian/changelog
 
 args="$args -us -uc"
 
 # clean old results
-# rm -f ../cti-serial_*.tar.xz ../cti-serial_*.dsc
-rm -f ../cti-serial_*.dsc
-rm -f $(echo ../cti-serial\*_{$arch,all}.{deb,build,changes})
+# rm -f ../${pkg}_*.tar.xz ../${pkg}_*.dsc
+rm -f ../${pkg}_*.dsc
+rm -f $(echo ../${pkg}\*_{$arch,all}.{deb,build,changes})
 
 # export DEBUILD_DPKG_BUILDPACKAGE_OPTS="$args"
 
@@ -130,13 +132,13 @@ if [ -n "$repo" ]; then
     ls
     echo ""
 
-    chngs=cti-serial_*_$arch.changes 
+    chngs=${pkg}_*_$arch.changes 
     # display changes file
     echo "Contents of $chngs"
     cat $chngs
     echo ""
 
-    archdebs=cti-serial*$arch.deb
+    archdebs=${pkg}*$arch.deb
 
     # Grab all the package names from the changes file
     pkgs=($(awk '/Checksums-Sha1/,/Checksums-Sha256/ { if (NF > 2) print $3 }' $chngs | grep ".*\.deb" | sed "s/_.*_.*\.deb//"))
@@ -228,9 +230,9 @@ if [ -n "$repo" ]; then
     done
 
     if [ $status -eq 0 ]; then
-        rm -f cti-serial_*_$arch.build cti-serial_*.dsc \
-            cti-serial*_all.deb cti-serial*_$arch.deb $chngs
-        # cti-serial_*.tar.xz \
+        rm -f ${pkg}_*_$arch.build ${pkg}_*.dsc \
+            ${pkg}*_all.deb ${pkg}*_$arch.deb $chngs
+        # ${pkg}_*.tar.xz \
     else
         echo "saving results in $PWD"
     fi

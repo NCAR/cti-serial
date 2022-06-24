@@ -12,11 +12,11 @@
 # get_variable = $(strip $(shell grep "^[[:space:]]*$(1)[[:space:]]*=\{1\}[[:space:]]*" $(2) | cut -d= -f2))
 
 # NOTE: In the call there can be *no* whitespace after the comma
-# VERSION := $(call get_variable,VERSION,$(KERNEL_DIR)/Makefile)
-# PATCHLEVEL := $(call get_variable,PATCHLEVEL,$(KERNEL_DIR)/Makefile)
-# SUBLEVEL := $(call get_variable,SUBLEVEL,$(KERNEL_DIR)/Makefile)
-# EXTRAVERSION := $(call get_variable,EXTRAVERSION,$(KERNEL_DIR)/Makefile)
-# LOCALVERSION := $(call get_variable,LOCALVERSION,$(KERNEL_DIR)/.config)
+# VERSION := $(call get_variable,VERSION,$(KERNELDIR)/Makefile)
+# PATCHLEVEL := $(call get_variable,PATCHLEVEL,$(KERNELDIR)/Makefile)
+# SUBLEVEL := $(call get_variable,SUBLEVEL,$(KERNELDIR)/Makefile)
+# EXTRAVERSION := $(call get_variable,EXTRAVERSION,$(KERNELDIR)/Makefile)
+# LOCALVERSION := $(call get_variable,LOCALVERSION,$(KERNELDIR)/.config)
 # KERNELRELEASE := $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)$(EXTRAVERSION)$(LOCALVERSION)
 
 ifneq ($(KERNELRELEASE),)
@@ -37,21 +37,21 @@ else
 
 $(info ifneq KERNELRELEASE is empty)
 
-# if KERNEL_DIR is empty, look on /usr/src
-ifeq ($(KERNEL_DIR),)
-KERNEL_DIR := $(shell find /usr/src -maxdepth 1 -mindepth 1 -type d -print | head -n 1)
+# if KERNELDIR is empty, look on /usr/src
+ifeq ($(KERNELDIR),)
+KERNELDIR := $(shell find /usr/src -maxdepth 1 -mindepth 1 -type d -print | head -n 1)
 endif
 
-# if KERNEL_DIR is still empty, get current kernel version - assumes we're building
+# if KERNELDIR is still empty, get current kernel version - assumes we're building
 # for this host system.
-ifeq ($(KERNEL_DIR),)
-KERNEL_DIR := /lib/modules/$(shell uname -r)/build
+ifeq ($(KERNELDIR),)
+KERNELDIR := /lib/modules/$(shell uname -r)/build
 endif
 
-$(info KERNEL_DIR=$(KERNEL_DIR))
+$(info KERNELDIR=$(KERNELDIR))
 
 default:
-	$(MAKE) -C $(KERNEL_DIR) M=$$PWD
+	$(MAKE) -C $(KERNELDIR) M=$$PWD
 
 endif
 
@@ -61,5 +61,5 @@ install: modules_install
 
 modules modules_install clean::
 	$(RM) *.o.ur-safe
-	@$(MAKE) -C $(KERNEL_DIR) M=$$PWD $@
+	@$(MAKE) -C $(KERNELDIR) M=$$PWD $@
 

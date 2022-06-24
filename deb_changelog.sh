@@ -63,5 +63,5 @@ EOD
 # create Debian changelog from git log messages since the tag $sincetag.
 # Put SHA hash by itself on first line. Above awk script then
 # runs git describe on that hash in order to get a X.Y-Z version.
-git log --max-count=100 --date-order --format="%H%ncti-serial%n  * (XXXXXXX) %s%n -- %aN <%ae>  %cD" --date=local ${sincetag}.. | awk -f $awkcom
+git log --max-count=100 --date-order --format="%H%n${pkg}%n  * (XXXXXXX) %s%n -- %aN <%ae>  %cD" --date=local ${sincetag}.. | awk -f $awkcom
 
