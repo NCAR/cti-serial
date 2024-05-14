@@ -2,7 +2,7 @@
 # ALL:    build
 PREFIX = /usr
 
-KERNELDIR ?= $(shell find /usr/src/linux-header* -maxdepth 1 -mindepth 1 -type d -print | head -n 1)
+KERNELDIR ?= $(shell find /usr/src/linux-header* -maxdepth 0 -mindepth 0 -type d -print | head -n 1)
 # KERNELDIR := /usr/src/linux-headers-4.15.18-vortex86dx3 
 
 $(info DESTDIR=$(DESTDIR))

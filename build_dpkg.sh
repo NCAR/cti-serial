@@ -6,7 +6,7 @@ set -e
 set -x
 
 key='<eol-prog@eol.ucar.edu>'
-eolrepo=/net/ftp/pub/archive/software/debian
+eolrepo=/net/www/docs/software/debian
 
 usage() {
     echo "Usage: ${1##*/} [-i repository ] [ -I codename ] arch"
